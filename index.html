@@ -2,21 +2,21 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>МОЛНИЕНОС ПРО — Профессиональный Инженерный Модуль ЭОМ</title>
+    <title>МОЛНИЕНОС ПРО v2.1 — Инженерный комплекс ЭОМ</title>
     <script src="https://cloudflare.com"></script>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #1c1c1e; color: #f2f2f7; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .app-container { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; }
         .top-bar { background: #2c2c2e; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #3a3a3c; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .brand { font-size: 20px; font-weight: 800; letter-spacing: 1px; color: #ff9f0a; }
-        .toolbar { display: flex; gap: 10px; background: #2c2c2e; padding: 10px; border-radius: 12px; border: 1px solid #3a3a3c; }
-        button { padding: 10px 16px; background: #3a3a3c; color: #fff; border: none; cursor: pointer; border-radius: 8px; font-weight: 6px; font-size: 14px; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; }
+        .toolbar { display: flex; gap: 10px; background: #2c2c2e; padding: 10px; border-radius: 12px; border: 1px solid #3a3a3c; flex-wrap: wrap; }
+        button { padding: 10px 16px; background: #3a3a3c; color: #fff; border: none; cursor: pointer; border-radius: 8px; font-weight: 600; font-size: 14px; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; }
         button:hover { background: #48484a; }
         button.active { background: #ff9f0a; color: #000; font-weight: bold; }
         button.action-btn { background: #30d158; color: #fff; font-weight: bold; }
         button.action-btn:hover { background: #34c759; }
         .workspace { display: flex; gap: 20px; width: 100%; }
-        #canvas-wrapper { background: #000; border-radius: 14px; border: 2px solid #3a3a3c; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); overflow: hidden; position: relative; }
+        #canvas-wrapper { background: #141414; border-radius: 14px; border: 2px solid #3a3a3c; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); overflow: hidden; }
         .sidebar { width: 350px; display: flex; flex-direction: column; gap: 20px; }
         .widget { background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         .widget h3 { margin-top: 0; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; color: #ff9f0a; border-bottom: 1px solid #3a3a3c; padding-bottom: 8px; }
@@ -31,18 +31,19 @@
 
 <div class="app-container">
     <div class="top-bar">
-        <div class="brand">⚡ МОЛНИЕНОС ПРО <span style="color:#fff;font-size:14px;font-weight:400;">v2.0</span></div>
-        <div style="font-size: 14px; color: #aeaeb2;">Автономный инженерный комплекс проектирования ЭОМ</div>
+        <div class="brand">⚡ МОЛНИЕНОС ПРО <span style="color:#fff;font-size:14px;font-weight:400;">v2.1</span></div>
+        <div style="font-size: 14px; color: #aeaeb2;">Личный кабинет разработчика — Саутин А. Г.</div>
     </div>
 
     <div class="toolbar">
         <input type="file" id="plan-loader" class="file-input" accept="image/*">
-        <button onclick="document.getElementById('plan-loader').click()" style="background:#0a84ff;color:#fff;">📂 Загрузить чертеж</button>
-        <button id="tool-scale" onclick="setMode('scale')">📐 Шаг 1: Задать масштаб (1м)</button>
-        <button id="tool-shield" onclick="setMode('shield')">🔲 Шаг 2: Установить Щит</button>
-        <button id="tool-socket" onclick="setMode('socket')" class="active">🔵 Шаг 3: Ставить Розетки</button>
-        <button id="tool-light" onclick="setMode('light')">🔴 Шаг 4: Ставить Свет</button>
-        <button class="action-btn" onclick="generateInvoice()" style="margin-left:auto;">📋 Выпустить Смету и PDF</button>
+        <button onclick="document.getElementById('plan-loader').click()" style="background:#0a84ff;color:#fff;font-weight:bold;">📂 1. Загрузить PNG план</button>
+        <button id="tool-scale" onclick="setMode('scale')">📐 2. Задать масштаб (1 метр)</button>
+        <button id="tool-shield" onclick="setMode('shield')">🔲 3. Поставить Щит</button>
+        <button id="tool-socket" onclick="setMode('socket')" class="active">🔵 4. Точки: Розетка</button>
+        <button id="tool-light" onclick="setMode('light')">🔴 5. Точки: Свет</button>
+        <button id="tool-delete" onclick="setMode('delete')" style="background:#ff453a;">✖ Режим: Удаление</button>
+        <button class="action-btn" onclick="generateInvoice()" style="margin-left:auto;">📋 Выпустить Смету в PDF</button>
     </div>
 
     <div class="workspace">
@@ -53,11 +54,11 @@
         <div class="sidebar">
             <div class="widget">
                 <h3>Инженерные объемы</h3>
-                <div class="data-row"><span>Масштаб проекта:</span> <span class="data-val" id="val-scale">Не задан (1пкс=1см)</span></div>
+                <div class="data-row"><span>Калибровка (1м):</span> <span class="data-val" id="val-scale">Авто (1пкс=1см)</span></div>
                 <div class="data-row"><span>Силовые розетки:</span> <span class="data-val" id="val-sockets">0 шт</span></div>
                 <div class="data-row"><span>Точки освещения:</span> <span class="data-val" id="val-lights">0 шт</span></div>
-                <div class="data-row"><span>Кабель ВВГнг-LS 3х2.5:</span> <span class="data-val" id="val-c25">0 м</span></div>
-                <div class="data-row"><span>Кабель ВВГнг-LS 3х1.5:</span> <span class="data-val" id="val-c15">0 м</span></div>
+                <div class="data-row"><span>Проводка 3х2.5 (Сила):</span> <span class="data-val" id="val-c25">0 м</span></div>
+                <div class="data-row"><span>Проводка 3х1.5 (Свет):</span> <span class="data-val" id="val-c15">0 м</span></div>
                 <div class="data-row"><span>Штробление стен:</span> <span class="data-val" id="val-sht">0 м</span></div>
                 <div class="data-row"><span>Подрозетники:</span> <span class="data-val" id="val-pod">0 шт</span></div>
             </div>
@@ -65,9 +66,9 @@
             <div class="widget">
                 <h3>Финансовый расчет</h3>
                 <div class="data-row"><span>Стоимость работ:</span> <span class="data-val" id="val-work-cost">0 ₽</span></div>
-                <div class="data-row"><span>Стоимость материалов:</span> <span class="data-val" id="val-mat-cost">0 ₽</span></div>
+                <div class="data-row"><span>Черновые материалы:</span> <span class="data-val" id="val-mat-cost">0 ₽</span></div>
                 <div class="total-box">
-                    <span>ИТОГО:</span>
+                    <span>ИТОГО СМЕТА:</span>
                     <span class="total-price" id="val-total-cost">0 ₽</span>
                 </div>
             </div>
@@ -78,37 +79,56 @@
 <script>
     const canvas = new fabric.Canvas('editor');
     let currentMode = 'socket';
-    let scaleFactor = 1; // 1 пиксель = 1 см по умолчанию
+    let scaleFactor = 1; 
     let shieldPoint = null;
     let isDrawingLine = false;
     let lineStart = null;
 
-    // Загрузка файла подложки напрямую в браузер без серверов
     document.getElementById('plan-loader').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
+        
         const reader = new FileReader();
-        reader.onload = function(f) {
-            fabric.Image.fromURL(f.target.result, function(img) {
-                img.set({ scaleX: canvas.width / img.width, scaleY: canvas.height / img.height, selectable: false });
-                canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-            });
+        reader.onload = function(event) {
+            const imgObj = new Image();
+            imgObj.src = event.target.result;
+            imgObj.onload = function() {
+                const fabricImg = new fabric.Image(imgObj);
+                canvas.clear();
+                shieldPoint = null;
+                
+                fabricImg.set({
+                    scaleX: canvas.width / fabricImg.width,
+                    scaleY: canvas.height / fabricImg.height,
+                    selectable: false,
+                    hoverCursor: 'default'
+                });
+                canvas.setBackgroundImage(fabricImg, canvas.renderAll.bind(canvas));
+                recalculateAll();
+            }
         };
         reader.readAsDataURL(file);
     });
 
     function setMode(mode) {
         currentMode = mode;
-        ['scale', 'shield', 'socket', 'light'].forEach(m => {
+        ['scale', 'shield', 'socket', 'light', 'delete'].forEach(m => {
             const btn = document.getElementById('tool-' + m);
             if (btn) btn.className = m === mode ? 'active' : '';
         });
     }
 
-    // Обработка кликов и расстановка элементов на плане
     canvas.on('mouse:down', function(opt) {
         const pointer = canvas.getPointer(opt.e);
         
+        if (currentMode === 'delete') {
+            if (opt.target && opt.target.itemType !== 'shield') {
+                canvas.remove(opt.target);
+                recalculateAll();
+            }
+            return;
+        }
+
         if (currentMode === 'scale') {
             if (!isDrawingLine) {
                 isDrawingLine = true;
@@ -117,9 +137,10 @@
                 let dx = pointer.x - lineStart.x;
                 let dy = pointer.y - lineStart.y;
                 let pixelDist = Math.sqrt(dx*dx + dy*dy);
-                // Считаем масштаб: сколько сантиметров в одном пикселе, если прочерчен отрезок в 1 метр (100 см)
-                scaleFactor = 100 / pixelDist;
-                document.getElementById('val-scale').innerText = `1 пкс = ${scaleFactor.toFixed(1)} см`;
+                if(pixelDist > 5) {
+                    scaleFactor = 100 / pixelDist;
+                    document.getElementById('val-scale').innerText = `1 пкс = ${scaleFactor.toFixed(1)} см`;
+                }
                 isDrawingLine = false;
                 setMode('socket');
                 recalculateAll();
@@ -127,7 +148,7 @@
             return;
         }
 
-        if (opt.target) return; // Кликнули по готовой точке — можно тащить
+        if (opt.target) return;
 
         if (currentMode === 'shield') {
             if (shieldPoint) canvas.remove(shieldPoint);
@@ -146,7 +167,6 @@
         recalculateAll();
     });
 
-    // Трассировщик кабеля по координатам от щита + расчет сметы
     function recalculateAll() {
         let objects = canvas.getObjects();
         let sockets = objects.filter(o => o.itemType === 'socket');
@@ -154,21 +174,18 @@
 
         let totalCable25 = 0;
         let totalCable15 = 0;
-
-        // Если щит выставлен, считаем реальное физическое расстояние до каждой точки по трассам
         let centerShield = shieldPoint ? { x: shieldPoint.left + 12, y: shieldPoint.top + 12 } : { x: 50, y: 50 };
 
         sockets.forEach(s => {
             let dx = (s.left + 10) - centerShield.x;
             let dy = (s.top + 10) - centerShield.y;
-            // Переводим пиксельное расстояние в реальные метры с учетом масштаба + 2.5м на спуски/подъемы стен
-            totalCable25 += (Math.sqrt(dx*dx + dy*dy) * scaleFactor / 100) + 2.5;
+            totalCable25 += (Math.sqrt(dx*dx + dy*dy) * scaleFactor / 100) + 2.5; 
         });
 
         lights.forEach(l => {
             let dx = (l.left + 10) - centerShield.x;
             let dy = (l.top + 10) - centerShield.y;
-            totalCable15 += (Math.sqrt(dx*dx + dy*dy) * scaleFactor / 100) + 3.0; // Спуск на выключатель
+            totalCable15 += (Math.sqrt(dx*dx + dy*dy) * scaleFactor / 100) + 3.0; 
         });
 
         let sCount = sockets.length;
@@ -176,6 +193,3 @@
         let shtros = (sCount + lCount) * 1.2;
         let podroz = sCount + lCount;
 
-        // Вывод объемов в виджет
-        document.getElementById('val-sockets').innerText = sCount + ' шт';
-        document.getElementById('val-lights').innerText = lCount + ' шт';
