@@ -2,112 +2,74 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>МОЛНИЕНОС ПРО v2.1 — Инженерный комплекс ЭОМ</title>
+    <title>МОЛНИЕНОС ПРО v2.2 — ЭОМ</title>
     <script src="https://cloudflare.com"></script>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #1c1c1e; color: #f2f2f7; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: sans-serif; background: #1c1c1e; color: #f2f2f7; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .app-container { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; }
-        .top-bar { background: #2c2c2e; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #3a3a3c; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .brand { font-size: 20px; font-weight: 800; letter-spacing: 1px; color: #ff9f0a; }
-        .toolbar { display: flex; gap: 10px; background: #2c2c2e; padding: 10px; border-radius: 12px; border: 1px solid #3a3a3c; flex-wrap: wrap; }
-        button { padding: 10px 16px; background: #3a3a3c; color: #fff; border: none; cursor: pointer; border-radius: 8px; font-weight: 600; font-size: 14px; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; }
-        button:hover { background: #48484a; }
-        button.active { background: #ff9f0a; color: #000; font-weight: bold; }
-        button.action-btn { background: #30d158; color: #fff; font-weight: bold; }
-        button.action-btn:hover { background: #34c759; }
+        .toolbar { display: flex; gap: 10px; background: #2c2c2e; padding: 10px; border-radius: 12px; border: 1px solid #3a3a3c; }
+        button { padding: 10px 16px; background: #3a3a3c; color: #fff; border: none; cursor: pointer; border-radius: 8px; font-weight: 600; }
+        button.active { background: #ff9f0a; color: #000; }
+        button.action-btn { background: #30d158; color: #fff; margin-left: auto; }
         .workspace { display: flex; gap: 20px; width: 100%; }
-        #canvas-wrapper { background: #141414; border-radius: 14px; border: 2px solid #3a3a3c; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); overflow: hidden; }
+        #canvas-wrapper { background: #141414; border-radius: 14px; border: 2px solid #3a3a3c; overflow: hidden; }
         .sidebar { width: 350px; display: flex; flex-direction: column; gap: 20px; }
-        .widget { background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .widget h3 { margin-top: 0; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; color: #ff9f0a; border-bottom: 1px solid #3a3a3c; padding-bottom: 8px; }
+        .widget { background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 12px; padding: 20px; }
         .data-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; border-bottom: 1px dashed #3a3a3c; padding-bottom: 5px; }
-        .data-val { font-weight: bold; color: #64d2ff; }
         .total-box { margin-top: 15px; padding-top: 15px; border-top: 2px solid #3a3a3c; display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; }
-        .total-price { color: #30d158; }
-        .file-input { display: none; }
     </style>
 </head>
 <body>
-
 <div class="app-container">
-    <div class="top-bar">
-        <div class="brand">⚡ МОЛНИЕНОС ПРО <span style="color:#fff;font-size:14px;font-weight:400;">v2.1</span></div>
-        <div style="font-size: 14px; color: #aeaeb2;">Личный кабинет разработчика — Саутин А. Г.</div>
-    </div>
-
     <div class="toolbar">
-        <input type="file" id="plan-loader" class="file-input" accept="image/*">
-        <button onclick="document.getElementById('plan-loader').click()" style="background:#0a84ff;color:#fff;font-weight:bold;">📂 1. Загрузить PNG план</button>
-        <button id="tool-scale" onclick="setMode('scale')">📐 2. Задать масштаб (1 метр)</button>
-        <button id="tool-shield" onclick="setMode('shield')">🔲 3. Поставить Щит</button>
-        <button id="tool-socket" onclick="setMode('socket')" class="active">🔵 4. Точки: Розетка</button>
-        <button id="tool-light" onclick="setMode('light')">🔴 5. Точки: Свет</button>
-        <button id="tool-delete" onclick="setMode('delete')" style="background:#ff453a;">✖ Режим: Удаление</button>
-        <button class="action-btn" onclick="generateInvoice()" style="margin-left:auto;">📋 Выпустить Смету в PDF</button>
+        <input type="file" id="plan-loader" style="display:none;" accept="image/*">
+        <button onclick="document.getElementById('plan-loader').click()" style="background:#0a84ff;">📂 1. Загрузить PNG</button>
+        <button id="tool-scale" onclick="setMode('scale')">📐 2. Масштаб (1м)</button>
+        <button id="tool-shield" onclick="setMode('shield')">🔲 3. Щит</button>
+        <button id="tool-socket" onclick="setMode('socket')" class="active">🔵 4. Розетка</button>
+        <button id="tool-light" onclick="setMode('light')">🔴 5. Свет</button>
+        <button id="tool-delete" onclick="setMode('delete')" style="background:#ff453a;">✖ Удалить</button>
+        <button class="action-btn" onclick="generateInvoice()">📋 Смета в PDF</button>
     </div>
-
     <div class="workspace">
-        <div id="canvas-wrapper">
-            <canvas id="editor" width="830" height="600"></canvas>
-        </div>
-
+        <div id="canvas-wrapper"><canvas id="editor" width="830" height="600"></canvas></div>
         <div class="sidebar">
             <div class="widget">
-                <h3>Инженерные объемы</h3>
-                <div class="data-row"><span>Калибровка (1м):</span> <span class="data-val" id="val-scale">Авто (1пкс=1см)</span></div>
-                <div class="data-row"><span>Силовые розетки:</span> <span class="data-val" id="val-sockets">0 шт</span></div>
-                <div class="data-row"><span>Точки освещения:</span> <span class="data-val" id="val-lights">0 шт</span></div>
-                <div class="data-row"><span>Проводка 3х2.5 (Сила):</span> <span class="data-val" id="val-c25">0 м</span></div>
-                <div class="data-row"><span>Проводка 3х1.5 (Свет):</span> <span class="data-val" id="val-c15">0 м</span></div>
-                <div class="data-row"><span>Штробление стен:</span> <span class="data-val" id="val-sht">0 м</span></div>
-                <div class="data-row"><span>Подрозетники:</span> <span class="data-val" id="val-pod">0 шт</span></div>
+                <h3>Объемы</h3>
+                <div class="data-row"><span>Калибровка:</span> <span id="val-scale">1пкс=1см</span></div>
+                <div class="data-row"><span>Розетки:</span> <span id="val-sockets">0 шт</span></div>
+                <div class="data-row"><span>Свет:</span> <span id="val-lights">0 шт</span></div>
+                <div class="data-row"><span>Кабель 3х2.5:</span> <span id="val-c25">0 м</span></div>
+                <div class="data-row"><span>Кабель 3х1.5:</span> <span id="val-c15">0 м</span></div>
+                <div class="data-row"><span>Штробление:</span> <span id="val-sht">0 м</span></div>
+                <div class="data-row"><span>Подрозетники:</span> <span id="val-pod">0 шт</span></div>
             </div>
-
             <div class="widget">
-                <h3>Финансовый расчет</h3>
-                <div class="data-row"><span>Стоимость работ:</span> <span class="data-val" id="val-work-cost">0 ₽</span></div>
-                <div class="data-row"><span>Черновые материалы:</span> <span class="data-val" id="val-mat-cost">0 ₽</span></div>
-                <div class="total-box">
-                    <span>ИТОГО СМЕТА:</span>
-                    <span class="total-price" id="val-total-cost">0 ₽</span>
-                </div>
+                <h3>Расчет</h3>
+                <div class="data-row"><span>Работы:</span> <span id="val-work-cost">0 ₽</span></div>
+                <div class="data-row"><span>Материалы:</span> <span id="val-mat-cost">0 ₽</span></div>
+                <div class="total-box"><span>ИТОГО:</span> <span id="val-total-cost" style="color:#30d158;">0 ₽</span></div>
             </div>
         </div>
     </div>
 </div>
-
 <script>
     const canvas = new fabric.Canvas('editor');
-    let currentMode = 'socket';
-    let scaleFactor = 1; 
-    let shieldPoint = null;
-    let isDrawingLine = false;
-    let lineStart = null;
+    let currentMode = 'socket', scaleFactor = 1, shieldPoint = null, isDrawingLine = false, lineStart = null;
 
     document.getElementById('plan-loader').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        
+        if (!e.target.files[0]) return;
         const reader = new FileReader();
         reader.onload = function(event) {
-            const imgObj = new Image();
-            imgObj.src = event.target.result;
-            imgObj.onload = function() {
-                const fabricImg = new fabric.Image(imgObj);
-                canvas.clear();
-                shieldPoint = null;
-                
-                fabricImg.set({
-                    scaleX: canvas.width / fabricImg.width,
-                    scaleY: canvas.height / fabricImg.height,
-                    selectable: false,
-                    hoverCursor: 'default'
-                });
-                canvas.setBackgroundImage(fabricImg, canvas.renderAll.bind(canvas));
+            fabric.Image.fromURL(event.target.result, function(img) {
+                canvas.clear(); shieldPoint = null;
+                img.set({ left: 0, top: 0, selectable: false });
+                img.scaleToWidth(canvas.width); img.scaleToHeight(canvas.height);
+                canvas.add(img); canvas.sendToBack(img); canvas.requestRenderAll();
                 recalculateAll();
-            }
+            });
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(e.target.files[0]);
     });
 
     function setMode(mode) {
@@ -120,49 +82,31 @@
 
     canvas.on('mouse:down', function(opt) {
         const pointer = canvas.getPointer(opt.e);
-        
         if (currentMode === 'delete') {
-            if (opt.target && opt.target.itemType !== 'shield') {
-                canvas.remove(opt.target);
-                recalculateAll();
+            if (opt.target && opt.target.itemType !== 'shield' && opt.target.type !== 'image') {
+                canvas.remove(opt.target); recalculateAll();
             }
             return;
         }
-
         if (currentMode === 'scale') {
-            if (!isDrawingLine) {
-                isDrawingLine = true;
-                lineStart = pointer;
-            } else {
-                let dx = pointer.x - lineStart.x;
-                let dy = pointer.y - lineStart.y;
-                let pixelDist = Math.sqrt(dx*dx + dy*dy);
-                if(pixelDist > 5) {
-                    scaleFactor = 100 / pixelDist;
-                    document.getElementById('val-scale').innerText = `1 пкс = ${scaleFactor.toFixed(1)} см`;
-                }
-                isDrawingLine = false;
-                setMode('socket');
-                recalculateAll();
+            if (!isDrawingLine) { isDrawingLine = true; lineStart = pointer; }
+            else {
+                let dx = pointer.x - lineStart.x, dy = pointer.y - lineStart.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist > 5) { scaleFactor = 100 / dist; document.getElementById('val-scale').innerText = `1пкс=${scaleFactor.toFixed(1)}см`; }
+                isDrawingLine = false; setMode('socket'); recalculateAll();
             }
             return;
         }
-
-        if (opt.target) return;
-
+        if (opt.target && opt.target.type !== 'image') return;
         if (currentMode === 'shield') {
             if (shieldPoint) canvas.remove(shieldPoint);
             shieldPoint = new fabric.Rect({ top: pointer.y - 12, left: pointer.x - 12, width: 24, height: 24, fill: '#ff9f0a', stroke: '#fff', strokeWidth: 2, hasControls: false });
-            shieldPoint.itemType = 'shield';
-            canvas.add(shieldPoint);
-            shieldPoint.on('moving', recalculateAll);
-            setMode('socket');
+            shieldPoint.itemType = 'shield'; canvas.add(shieldPoint); shieldPoint.on('moving', recalculateAll); setMode('socket');
         } else if (currentMode === 'socket' || currentMode === 'light') {
             let color = currentMode === 'socket' ? '#0a84ff' : '#ff453a';
             let circle = new fabric.Circle({ top: pointer.y - 10, left: pointer.x - 10, radius: 10, fill: color, stroke: '#fff', strokeWidth: 1.5, hasControls: false });
-            circle.itemType = currentMode;
-            canvas.add(circle);
-            circle.on('moving', recalculateAll);
+            circle.itemType = currentMode; canvas.add(circle); circle.on('moving', recalculateAll);
         }
         recalculateAll();
     });
@@ -171,25 +115,37 @@
         let objects = canvas.getObjects();
         let sockets = objects.filter(o => o.itemType === 'socket');
         let lights = objects.filter(o => o.itemType === 'light');
-
-        let totalCable25 = 0;
-        let totalCable15 = 0;
-        let centerShield = shieldPoint ? { x: shieldPoint.left + 12, y: shieldPoint.top + 12 } : { x: 50, y: 50 };
+        let totalC25 = 0, totalC15 = 0;
+        let shield = shieldPoint ? { x: shieldPoint.left + 12, y: shieldPoint.top + 12 } : { x: 50, y: 50 };
 
         sockets.forEach(s => {
-            let dx = (s.left + 10) - centerShield.x;
-            let dy = (s.top + 10) - centerShield.y;
-            totalCable25 += (Math.sqrt(dx*dx + dy*dy) * scaleFactor / 100) + 2.5; 
+            let dx = (s.left + 10) - shield.x, dy = (s.top + 10) - shield.y;
+            totalC25 += (Math.sqrt(dx*dx + dy*dy) * scaleFactor / 100) + 2.5;
         });
-
         lights.forEach(l => {
-            let dx = (l.left + 10) - centerShield.x;
-            let dy = (l.top + 10) - centerShield.y;
-            totalCable15 += (Math.sqrt(dx*dx + dy*dy) * scaleFactor / 100) + 3.0; 
+            let dx = (l.left + 10) - shield.x, dy = (l.top + 10) - shield.y;
+            totalC15 += (Math.sqrt(dx*dx + dy*dy) * scaleFactor / 100) + 3.0;
         });
 
-        let sCount = sockets.length;
-        let lCount = lights.length;
-        let shtros = (sCount + lCount) * 1.2;
-        let podroz = sCount + lCount;
+        let sCount = sockets.length, lCount = lights.length;
+        let shtros = (sCount + lCount) * 1.2, podroz = sCount + lCount;
 
+        document.getElementById('val-sockets').innerText = sCount + ' шт';
+        document.getElementById('val-lights').innerText = lCount + ' шт';
+        document.getElementById('val-c25').innerText = Math.round(totalC25) + ' м';
+        document.getElementById('val-c15').innerText = Math.round(totalC15) + ' м';
+        document.getElementById('val-sht').innerText = Math.round(shtros) + ' м';
+        document.getElementById('val-pod').innerText = podroz + ' шт';
+
+        let pWork = 1300, pShtr = 250, pC25 = 95, pC15 = 65, pPod = 60;
+        let costWork = (sCount + lCount) * pWork + (shtros * pShtr);
+        let costMat = (totalC25 * pC25) + (totalC15 * pC15) + (podroz * pPod);
+
+        document.getElementById('val-work-cost').innerText = Math.round(costWork).toLocaleString() + ' ₽';
+        document.getElementById('val-mat-cost').innerText = Math.round(costMat).toLocaleString() + ' ₽';
+        document.getElementById('val-total-cost').innerText = Math.round(costWork + costMat).toLocaleString() + ' ₽';
+    }
+    function generateInvoice() { window.print(); }
+</script>
+</body>
+</html>
