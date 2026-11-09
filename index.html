@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>МОЛНИЕНОС ПРО v2.2 — ЭОМ</title>
+    <title>МОЛНИЕНОС ПРО v2.3 — ЭОМ</title>
     <script src="https://cloudflare.com"></script>
     <style>
         body { font-family: sans-serif; background: #1c1c1e; color: #f2f2f7; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
@@ -12,7 +12,9 @@
         button.active { background: #ff9f0a; color: #000; }
         button.action-btn { background: #30d158; color: #fff; margin-left: auto; }
         .workspace { display: flex; gap: 20px; width: 100%; }
-        #canvas-wrapper { background: #141414; border-radius: 14px; border: 2px solid #3a3a3c; overflow: hidden; }
+        #canvas-wrapper { background: #141414; border-radius: 14px; border: 2px solid #3a3a3c; overflow: hidden; position: relative; width: 830px; height: 600px; }
+        #plan-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1; display: none; }
+        .canvas-container { position: absolute !important; top: 0; left: 0; z-index: 2; }
         .sidebar { width: 350px; display: flex; flex-direction: column; gap: 20px; }
         .widget { background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 12px; padding: 20px; }
         .data-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; border-bottom: 1px dashed #3a3a3c; padding-bottom: 5px; }
@@ -23,7 +25,7 @@
 <div class="app-container">
     <div class="toolbar">
         <input type="file" id="plan-loader" style="display:none;" accept="image/*">
-        <button onclick="document.getElementById('plan-loader').click()" style="background:#0a84ff;">📂 1. Загрузить PNG</button>
+        <button onclick="document.getElementById('plan-loader').click()" style="background:#0a84ff;">📂 1. Загрузить План (PNG/JPG)</button>
         <button id="tool-scale" onclick="setMode('scale')">📐 2. Масштаб (1м)</button>
         <button id="tool-shield" onclick="setMode('shield')">🔲 3. Щит</button>
         <button id="tool-socket" onclick="setMode('socket')" class="active">🔵 4. Розетка</button>
@@ -32,7 +34,10 @@
         <button class="action-btn" onclick="generateInvoice()">📋 Смета в PDF</button>
     </div>
     <div class="workspace">
-        <div id="canvas-wrapper"><canvas id="editor" width="830" height="600"></canvas></div>
+        <div id="canvas-wrapper">
+            <img id="plan-bg" src="" alt="Подложка">
+            <canvas id="editor" width="830" height="600"></canvas>
+        </div>
         <div class="sidebar">
             <div class="widget">
                 <h3>Объемы</h3>
@@ -57,17 +62,17 @@
     const canvas = new fabric.Canvas('editor');
     let currentMode = 'socket', scaleFactor = 1, shieldPoint = null, isDrawingLine = false, lineStart = null;
 
+    // Железный, неубиваемый загрузчик через стандартный тег IMG
     document.getElementById('plan-loader').addEventListener('change', function(e) {
-        if (!e.target.files[0]) return;
+        if (!e.target.files || !e.target.files[0]) return;
         const reader = new FileReader();
         reader.onload = function(event) {
-            fabric.Image.fromURL(event.target.result, function(img) {
-                canvas.clear(); shieldPoint = null;
-                img.set({ left: 0, top: 0, selectable: false });
-                img.scaleToWidth(canvas.width); img.scaleToHeight(canvas.height);
-                canvas.add(img); canvas.sendToBack(img); canvas.requestRenderAll();
-                recalculateAll();
-            });
+            const imgEl = document.getElementById('plan-bg');
+            imgEl.src = event.target.result;
+            imgEl.style.display = 'block';
+            canvas.clear();
+            shieldPoint = null;
+            recalculateAll();
         };
         reader.readAsDataURL(e.target.files[0]);
     });
@@ -83,7 +88,7 @@
     canvas.on('mouse:down', function(opt) {
         const pointer = canvas.getPointer(opt.e);
         if (currentMode === 'delete') {
-            if (opt.target && opt.target.itemType !== 'shield' && opt.target.type !== 'image') {
+            if (opt.target && opt.target.itemType !== 'shield') {
                 canvas.remove(opt.target); recalculateAll();
             }
             return;
@@ -98,7 +103,7 @@
             }
             return;
         }
-        if (opt.target && opt.target.type !== 'image') return;
+        if (opt.target) return;
         if (currentMode === 'shield') {
             if (shieldPoint) canvas.remove(shieldPoint);
             shieldPoint = new fabric.Rect({ top: pointer.y - 12, left: pointer.x - 12, width: 24, height: 24, fill: '#ff9f0a', stroke: '#fff', strokeWidth: 2, hasControls: false });
